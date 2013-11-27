@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cotonti Plugin Banners
  * Banner rotation plugin with statistics
@@ -14,6 +15,7 @@ global $ba_files_dir;
 require(cot_incfile('banners', 'plug'));
 
 // Удалить категорию с баннерами
-if(file_exists($ba_files_dir)){
-    ba_removeDir($ba_files_dir);
+if (file_exists($ba_files_dir))
+{
+	ba_removeDir($ba_files_dir);
 }

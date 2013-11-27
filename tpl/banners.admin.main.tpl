@@ -129,11 +129,11 @@
             <td>{FORM_STICKY}<br />{PHP.L.ba_sticky_tip}</td>
         </tr>
         <tr>
-            <td>{PHP.L.ba_publish_up}:</td>
-            <td>{FORM_PUBLISH_UP}</td>
+            <td>{PHP.L.ba_begin}:</td>
+            <td>{FORM_BEGIN}</td>
         </tr>
         <tr>
-            <td>{PHP.L.ba_publish_down}:</td>
+            <td>{PHP.L.ba_expire}:</td>
             <td>{FORM_PUBLISH_DOWN}</td>
         </tr>
         <tr>

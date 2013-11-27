@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Cotonti Plugin Banners
  * Banner rotation plugin with statistics
@@ -7,8 +8,6 @@
  * @author Alex
  * @copyright Portal30 2013 http://portal30.ru
  */
-
-
 $R['banner_image_admin'] = '<img src="{$file}" alt="{$alt}" style="width:{$width}px; height:{$height}px" />';
 $R['banner_image'] = '<img src="{$file}" alt="{$alt}" style="width:{$width}px; height:{$height}px" />';
 $R['banner_flash_admin'] = '

@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS `cot_banners` (
   `ba_description` TEXT DEFAULT '',
   `ba_published` TINYINT(1) UNSIGNED DEFAULT 0,
   `ba_sticky` TINYINT(1) UNSIGNED DEFAULT 0,
-  `ba_publish_up` DATETIME DEFAULT '0000-00-00 00:00:00',
-  `ba_publish_down` DATETIME DEFAULT '0000-00-00 00:00:00',
+  `ba_begin` int(11) NOT NULL,
+  `ba_expire` int(11) NOT NULL,
   `ba_imptotal` INTEGER DEFAULT '0',
   `ba_impmade` INTEGER DEFAULT '0',
   `ba_lastimp` double DEFAULT '0',
@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `cot_banners` (
   `ba_track_impressions` TINYINT DEFAULT '-1',
   `ba_purchase_type` TINYINT DEFAULT '-1',
   `ba_ordering` INTEGER DEFAULT 0,
-  `ba_created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `ba_created` int(11) NOT NULL,
   `ba_created_by` int(11) NOT NULL DEFAULT '0',
-  `ba_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `ba_updated` int(11) NOT NULL,
   `ba_updated_by` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY  (`ba_id`),
   INDEX `idx_published` (`ba_published`),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `cot_banner_clients` (
 )  ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `cot_banner_tracks` (
-  `track_date` DATETIME NOT NULL,
+  `track_date` int(11) NOT NULL,
   `track_type` INTEGER UNSIGNED NOT NULL,
   `ba_id` INTEGER UNSIGNED NOT NULL,
   `track_count` INTEGER UNSIGNED NOT NULL DEFAULT '0',
