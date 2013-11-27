@@ -375,7 +375,7 @@ class BaBanner extends BaModelAbstract{
                     ));
                 }else{
                     // Вывод обычным образом
-                    $url = cot_url('banners', 'a=click&id='.$banner->ba_id);
+                    $url = cot_url('plug', 'e=banners&a=click&id='.$banner->ba_id);
 
                     if(!empty($banner->ba_file)){
                         $image = false;

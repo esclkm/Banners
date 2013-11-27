@@ -12,7 +12,7 @@
 $R['banner_image_admin'] = '<img src="{$file}" alt="{$alt}" style="width:{$width}px; height:{$height}px" />';
 $R['banner_image'] = '<img src="{$file}" alt="{$alt}" style="width:{$width}px; height:{$height}px" />';
 $R['banner_flash_admin'] = '
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{$width}" height="{$height}" style="display:block;margin:auto;">
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{$width}" height="{$height}" style="display:inline-block;margin:auto;">
     <param name="movie" value="{$file}" />
     <param name="wmode" value="transparent">
     <!--[if !IE]>-->
@@ -24,7 +24,7 @@ $R['banner_flash_admin'] = '
     <!--<![endif]-->
 </object>';
 $R['banner_flash'] = '
-<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{$width}" height="{$height}" style="display:block;margin:auto;">
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{$width}" height="{$height}" style="display:inline-block;margin:auto;">
     <param name="movie" value="{$file}" />
     <param name="wmode" value="transparent">
     <!--[if !IE]>-->

@@ -35,6 +35,7 @@ class MainController{
         );
 
         $cats = cot_import('cats', 'P', 'ARR');
+   //     cot_watch($cats);
         if(!$cats){
             $ret['error'] = 'Nothing to load';
             echo json_encode($ret);

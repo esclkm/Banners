@@ -246,9 +246,9 @@ class MainController{
             $item['ba_description'] = cot_import('rdescription', 'P', 'TXT');
             $item['ba_rsticky'] = cot_import('rsticky', 'P', 'BOL');
             $item['ba_publish_up'] = cot_import_date('rpublish_up');
-            $item['ba_publish_up'] = (!empty($item['ba_publish_up'])) ? date('Y-m-d H:i:s') : '0000-00-00 00:00:00';
+            $item['ba_publish_up'] = (!empty($item['ba_publish_up'])) ? date('Y-m-d H:i:s', $item['ba_publish_up']) : '0000-00-00 00:00:00';
             $item['ba_publish_down'] = cot_import_date('rpublish_down');
-            $item['ba_publish_down'] = (!empty($item['ba_publish_down'])) ? date('Y-m-d H:i:s') : '0000-00-00 00:00:00';
+            $item['ba_publish_down'] = (!empty($item['ba_publish_down'])) ? date('Y-m-d H:i:s', $item['ba_publish_down']) : '0000-00-00 00:00:00';
             $item['ba_imptotal'] = cot_import('rimptotal', 'P', 'INT');
             $item['ba_impmade'] = cot_import('rimpmade', 'P', 'INT');
             $item['ba_clicks'] = cot_import('rclicks', 'P', 'INT');
@@ -316,7 +316,7 @@ class MainController{
             'FORM_FILE' => $formFile,
             'FORM_WIDTH' => cot_inputbox('text', 'rwidth', $banner->ba_width),
             'FORM_HEIGHT' => cot_inputbox('text', 'rheight', $banner->ba_height),
-            'FORM_ALT' => cot_inputbox('text', 'ralt', $banner->alt),
+            'FORM_ALT' => cot_inputbox('text', 'ralt', $banner->ba_alt),
             'FORM_CUSTOMCODE' => cot_textarea('rcustomcode', $banner->ba_customcode, 5, 60),
             'FORM_CLICKURL' => cot_inputbox('text', 'rclickurl', $banner->ba_clickurl),
             'FORM_DESCRIPTION' => cot_textarea('rdescription', $banner->ba_description, 5, 60),
