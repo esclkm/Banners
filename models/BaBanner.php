@@ -249,7 +249,7 @@ class BaBanner extends BaModelAbstract
 		// Ежедневная статистика
 		if ($this->trackImpressions)
 		{
-			$trackDate = date('Y-m-d H', $sys['now']).':00:00';
+			$trackDate = cot_stamp2date(date('Y-m-d H', $sys['now']).':00:00');
 
 			$sql = "SELECT `track_count` FROM $db_ba_tracks
                 WHERE track_type=1 AND ba_id={$this->_data['ba_id']} AND track_date='{$trackDate}'";

@@ -77,7 +77,7 @@ class TrackController
 				{
 					if ($fil[$key] == 0)
 						continue;
-					$where['filter'][] = "a.track_date >= '".date('Y-m-d H:i:s', $fil[$key])."'";
+					$where['filter'][] = "a.track_date >= '".$fil[$key]."'";
 					$list_url_path["fil_df[year]"] = cot_date('Y', $fil[$key]);
 					$list_url_path["fil_df[month]"] = cot_date('m', $fil[$key]);
 					$list_url_path["fil_df[day]"] = cot_date('d', $fil[$key]);
@@ -85,7 +85,7 @@ class TrackController
 				{
 					if ($fil[$key] == 0)
 						continue;
-					$where['filter'][] = "a.track_date <= '".date('Y-m-d H:i:s', $fil[$key])."'";
+					$where['filter'][] = "a.track_date <= '".$fil[$key]."'";
 					$list_url_path["fil_dt[year]"] = cot_date('Y', $fil[$key]);
 					$list_url_path["fil_dt[month]"] = cot_date('m', $fil[$key]);
 					$list_url_path["fil_dt[day]"] = cot_date('d', $fil[$key]);
@@ -139,7 +139,6 @@ class TrackController
 			$i = $d + 1;
 			foreach ($list as $item)
 			{
-				$time = cot_date2stamp($item['track_date'], 'auto');
 				$tpl->assign(array(
 					'LIST_ROW_NUM' => $i,
 					'LIST_ROW_TITLE' => htmlspecialchars($item['ba_title']),
@@ -151,7 +150,7 @@ class TrackController
 					'LIST_ROW_TRACK_TYPE' => $item['track_type'],
 					'LIST_ROW_TRACK_TYPE_TEXT' => $types[$item['track_type']],
 					'LIST_ROW_TRACK_COUNT' => $item['track_count'],
-					'LIST_ROW_TRACK_DATE' => cot_date('datetime_medium', $time),
+					'LIST_ROW_TRACK_DATE' => cot_date('datetime_medium', $item['track_date']),
 				));
 				$i++;
 				$tpl->parse('MAIN.LIST_ROW');
@@ -254,7 +253,7 @@ class TrackController
 				{
 					if ($fil[$key] == 0)
 						continue;
-					$where['filter'][] = "track_date >= '".date('Y-m-d H:i:s', $fil[$key])."'";
+					$where['filter'][] = "track_date >= '".$fil[$key]."'";
 					$list_url_path["fil_df[year]"] = cot_date('Y', $fil[$key]);
 					$list_url_path["fil_df[month]"] = cot_date('m', $fil[$key]);
 					$list_url_path["fil_df[day]"] = cot_date('d', $fil[$key]);
@@ -262,7 +261,7 @@ class TrackController
 				{
 					if ($fil[$key] == 0)
 						continue;
-					$where['filter'][] = "track_date <= '".date('Y-m-d H:i:s', $fil[$key])."'";
+					$where['filter'][] = "track_date <= '".$fil[$key]."'";
 					$list_url_path["fil_dt[year]"] = cot_date('Y', $fil[$key]);
 					$list_url_path["fil_dt[month]"] = cot_date('m', $fil[$key]);
 					$list_url_path["fil_dt[day]"] = cot_date('d', $fil[$key]);
