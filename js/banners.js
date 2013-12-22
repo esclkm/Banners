@@ -22,7 +22,7 @@ $(function() {
     });
 
     if(cnt > 0){
-        $.post('index.php?e=banners&a=ajxLoad', {cats: cats, x : bannerx}, function(data){
+        $.post('index.php?e=banners&a=ajax', {cats: cats, x : bannerx}, function(data){
             if(data.error != ''){
                 alert(data.error)
             }else{

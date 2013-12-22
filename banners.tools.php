@@ -26,48 +26,20 @@ require_once cot_langfile('banners', 'plug');
 //cot_rc_link_file($cfg['plugins_dir'].'/banners/tpl/admin.css');
 // Роутер
 // Only if the file exists...
-if (!$n)
+if (!in_array($n, array('clients', 'track')))
+{
 	$n = 'main';
-
+}
+if(empty($a))
+{
+	$a = 'index';
+}
 if (file_exists(cot_incfile('banners', 'plug', 'admin.'.$n)))
 {
-	require_once cot_incfile('banners', 'plug', 'admin.'.$n);
-	/* Create the controller */
-	$_class = ucfirst($n).'Controller';
-	$controller = new $_class();
-
-	// TODO кеширование
-	/* Perform the Request task */
-	$shop_action = $a.'Action';
-	if (!$a && method_exists($controller, 'indexAction'))
-	{
-		$content = $controller->indexAction();
-	}
-	elseif (method_exists($controller, $shop_action))
-	{
-		$content = $controller->$shop_action();
-	}
-	else
-	{
-		// Error page
-		cot_die_message(404);
-		exit;
-	}
-
-	//ob_clean();
-	// todo дописать как вывод для плагинов
-	if (isset($content))
-	{
-		$tpl = new XTemplate(cot_tplfile('banners.admin', 'plug'));
-
-		// Error and message handling
-		cot_display_messages($tpl);
-
-		$tpl->assign('CONTENT', $content);
-		$tpl->parse('MAIN');
-
-		$plugin_body .= $tpl->text();
-	}
+	$t = new XTemplate(cot_tplfile('banners.admin.'.$n.'.'.$a, 'plug'));
+	require_once cot_incfile('banners', 'plug', 'admin.'.$n.'.'.$a);
+	$t->parse('MAIN');
+	$adminmain = $t->text('MAIN');
 }
 else
 {

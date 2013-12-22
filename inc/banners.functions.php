@@ -10,8 +10,29 @@
  */
 defined('COT_CODE') or die('Wrong URL.');
 
-if (!defined('DS'))
-	define('DS', DIRECTORY_SEPARATOR);
+// === Типы оплаты ===
+define(PURCHASE_DEFAULT, -1);
+define(PURCHASE_UNLIMITED, 1);
+define(PURCHASE_YEARLY, 2);
+define(PURCHASE_MONTHLY, 3);
+define(PURCHASE_WEEKLY, 4);
+define(PURCHASE_DAILY, 5);
+
+$purchase = array(
+	PURCHASE_DEFAULT => $L['Default'],
+	PURCHASE_UNLIMITED => $L['ba_unlimited'],
+	PURCHASE_YEARLY => $L['ba_pt_yearly'],
+	PURCHASE_MONTHLY => $L['ba_pt_monthly'],
+	PURCHASE_WEEKLY => $L['ba_pt_weekly'],
+	PURCHASE_DAILY => $L['ba_pt_daily']
+);
+
+// === Типы баннеров ===
+define(TYPE_UNKNOWN, 0);
+define(TYPE_IMAGE, 1);
+define(TYPE_FLASH, 2);
+define(TYPE_CUSTOM, 3);
+
 $db_ba_banners = (isset($db_ba_bannerse)) ? $db_ba_banners : $db_x.'banners';
 $db_ba_clients = (isset($db_ba_clients)) ? $db_ba_clients : $db_x.'banner_clients';
 $db_ba_tracks = (isset($db_ba_tracks)) ? $db_ba_tracks : $db_x.'banner_tracks';
@@ -21,17 +42,6 @@ $ba_files_dir = 'datas/banners/';
 
 require_once cot_incfile('banners', 'plug', 'resources');
 
-function baAutoLoader($class)
-{
-	global $cfg;
-	$fName = $cfg['plugins_dir'].DS.'banners'.DS.'models'.DS.$class.'.php';
-
-	if (file_exists($fName))
-	{
-		include($fName);
-	}
-	return false;
-}
 
 /**
  * Generates a banner widget.
@@ -63,7 +73,9 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners', $order = 'order', 
 			{
 				$tmp = trim($tmp);
 				if (empty($tmp))
+				{
 					continue;
+				}
 				if ($subcats)
 				{
 					// Specific cat
@@ -80,25 +92,24 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners', $order = 'order', 
 	}
 
 	$cond = array(
-		array('ba_published', 1),
-		"ba_begin <='".$sys['now']."'",
-		array('RAW', "ba_expire >='".$sys['now']."' OR ba_expire IS NULL"),
-		array('RAW', "ba_imptotal = 0 OR ba_impmade < ba_imptotal"),
+		'ba_published' => 'ba_published=1',
+		'ba_begin' => "ba_begin <='".(int)$sys['now']."'",
+		'ba_expire' => "(ba_expire >='".(int)$sys['now']."' OR ba_expire IS NULL)",
+		'ba_imptotal' => "(ba_imptotal = 0 OR ba_impmade < ba_imptotal)"
 	);
 	if (count($cats) > 0)
 	{
-		$cond[] = array('ba_cat', $cats);
+		$cond['ba_cat'] = 'ba_cat IN ("'.implode('", "', $cats).'"';
 	}
 	if ($client)
 	{
-		$cond[] = array('bac_id', $client);
+		$cond['client'] = 'bac_id = '.(int)$client;
 	}
-	$ord = "ba_lastimp ASC";
-	if ($order == 'rand')
-		$ord = 'RAND()';
-
-	$banners = BaBanner::find($cond, $cnt, 0, $ord);
-
+	$ord = 	($order == 'rand') ? 'RAND()' : "ba_lastimp ASC";
+	
+	$where = (!empty($cond)) ? 'WHERE '.$cond : '';
+	$banners = $db->query("SELECT * FROM $db_ba_banners WHERE $where ORDER BY $ord LIMIT $cnt")->fetchAll();
+	
 	if (!$banners)
 		return '';
 
@@ -110,14 +121,51 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners', $order = 'order', 
 		// Если включено кеширование и это незарег не засчитываем показ. Баннер будет запрошен аяксом
 		if (!(!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext]))
 		{
-			$banner->impress();
+			impress_banner($banner);
 		}
-		$t->assign(BaBanner::generateTags($banner, 'ROW_'));
+		$t->assign(banner_generateTags($banner, 'ROW_'));
 		$t->parse('MAIN.ROW');
 	}
 
 	$t->parse();
 	return $t->text();
+}
+
+function impress_banner($banner)
+{
+	global $db, $db_ba_tracks, $sys, $cfg, $db_ba_banners;
+
+	$db->update("UPDATE $db_ba_banners SET ba_impmade = ba_impmade+1, ba_lastimp=".(int)$sys['now']." WHERE ba_id = ".(int)$banner['ba_id']." LIMIT 1");
+
+	if ($cfg["plugin"]['banners']['track_impressions'] ||
+		($banner['ba_track_impressions'] == 1) ||
+		($banner['ba_track_impressions'] == -1 && $banner['bac_track_impressions'] == 1))
+	{
+		$trackDate = cot_stamp2date(date('Y-m-d H', $sys['now']).':00:00');
+
+		$sql = "SELECT `track_count` FROM $db_ba_tracks
+                WHERE track_type=1 AND ba_id={$banner['ba_id']} AND track_date='{$trackDate}'";
+
+		$count = $db->query($sql)->fetchColumn();
+
+		if ($count)
+		{
+			// update count
+			$data = array('track_count' => $count + 1);
+			$db->update($db_ba_tracks, $data, "track_type=1 AND ba_id={$banner['ba_id']} AND track_date='{$trackDate}'");
+		}
+		else
+		{
+			// insert new count
+			$data = array(
+				'track_count' => 1,
+				'track_type' => 1,
+				'ba_id' => (int)$banner['ba_id'],
+				'track_date' => $trackDate
+			);
+			$db->insert($db_ba_tracks, $data);
+		}
+	}
 }
 
 /**
@@ -137,8 +185,9 @@ function ba_importFile($inputname, $oldvalue = '')
 		$ext = mb_strtolower(mb_substr($import['name'], mb_strrpos($import['name'], '.') + 1));
 
 		if (!file_exists($ba_files_dir))
+		{
 			mkdir($ba_files_dir);
-
+		}
 		//check extension
 		if (empty($ba_allowed_ext) || in_array($ext, $ba_allowed_ext))
 		{
@@ -146,7 +195,8 @@ function ba_importFile($inputname, $oldvalue = '')
 			{
 				require_once cot_langfile('translit', 'core');
 				$fname = (is_array($cot_translit)) ? strtr($fname, $cot_translit) : '';
-			} $fname = str_replace(' ', '_', $fname);
+			}
+			$fname = str_replace(' ', '_', $fname);
 			$fname = preg_replace('#[^a-zA-Z0-9\-_\.\ \+]#', '', $fname);
 			$fname = str_replace('..', '.', $fname);
 			$fname = (empty($fname)) ? cot_unique() : $fname;
@@ -159,7 +209,9 @@ function ba_importFile($inputname, $oldvalue = '')
 			$file['new'] = (!$import['delete']) ? $ba_files_dir.$fname : '';
 
 			if (!empty($file['old']) && file_exists($file['old']))
+			{
 				unlink($file['old']);
+			}
 			if (!empty($file['tmp']) && !empty($file['tmp']))
 			{
 				move_uploaded_file($file['tmp'], $file['new']);
@@ -184,11 +236,8 @@ function ba_importFile($inputname, $oldvalue = '')
  */
 function cot_banners_sync($cat)
 {
-	$cond = array(
-		array('ba_cat', $cat)
-	);
-
-	return BaBanner::count($cond);
+	global $db_ba_banners, $db;
+	return $db->query("SELECT COUNT(*) FROM $db_ba_banners WHERE ba_cat ='" .$db->query($cat)."'")->fetchColumn();
 }
 
 /**
@@ -309,4 +358,146 @@ function ba_getFilesList($folder)
 	return $all_files;
 }
 
-spl_autoload_register('baAutoLoader');
+// === Методы для работы с шаблонами ===
+/**
+ * Returns banner tags for coTemplate
+ *
+ * @param array|int $banner Banner array or ID
+ * @param string $tagPrefix Prefix for tags
+ * @return array|void
+ */
+function banner_generateTags($banner, $tagPrefix = '')
+{
+	global $cfg, $L, $usr, $structure, $cache_ext;
+
+	static $extp_first = null, $extp_main = null;
+
+	if (is_null($extp_first))
+	{
+		$extp_first = cot_getextplugins('banners.tags.first');
+		$extp_main = cot_getextplugins('banners.tags.main');
+	}
+
+	/* === Hook === */
+	foreach ($extp_first as $pl)
+	{
+		include $pl;
+	}
+	/* ===== */
+
+
+	if (is_int($banner) && $banner > 0)
+	{
+		$banner = $db->query("SELECT * FROM $db_ba_banners WHERE ba_id = ".(int)$banner." LIMIT 1")->fetch();
+	}
+	if ($banner['id'] > 0)
+	{
+		$item_link = cot_url('admin', array('m' => 'other', 'p' => 'banners', 'a' => 'edit', 'id' => $banner['id']));
+
+		$temp_array = array(
+			'EDIT_URL' => $item_link,
+			'URL' => $banner['clickurl'],
+			'ID' => $banner['id'],
+			'TITLE' => htmlspecialchars($banner['title']),
+			'STICKY' => $banner['sticky'],
+			'STICKY_TEXT' => $banner['sticky'] ? $L['Yes'] : $L['No'],
+			'CLIENT_TITLE' => htmlspecialchars($banner['bac_title']),
+			'IMPTOTAL' => $banner['imptotal'],
+			'IMPTOTAL_TEXT' => ($banner['imptotal'] > 0) ? $banner['imptotal'] : $L['ba_unlimited'],
+			'IMPMADE' => $banner['impmade'],
+			'CLICKS' => $banner['clicks'],
+			'CATEGORY' => $banner['cat'],
+			'CATEGORY_TITLE' => htmlspecialchars($structure['banners'][$banner['cat']]['title']),
+			'CLICKS_PERSENT' => ($banner['impmade'] > 0) ?
+				round($banner['clicks'] / $banner['impmade'] * 100, 0)." %" : '0 %',
+			'WIDTH' => $banner['width'],
+			'HEIGHT' => $banner['height'],
+			'TYPE' => $banner['type'],
+			'PUBLISHED' => $banner['published'] ? $L['Yes'] : $L['No'],
+			'CLASS' => '',
+			'CACHE' => 0
+		);
+
+		if (!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext])
+		{
+			// учесть кеширование - запрашивать баннер аяксом
+			$temp_array['CLASS'] = 'banner-loading';
+			$temp_array['CACHE'] = 1;
+			$image = cot_rc('banner_load', array(
+				'width' => $banner['width'],
+				'height' => $banner['height']
+			));
+			$temp_array['BANNER'] = cot_rc('banner', array(
+				'banner' => $image
+			));
+		}
+		else
+		{
+			// Вывод обычным образом
+			$url = cot_url('plug', 'e=banners&a=click&id='.$banner['id']);
+
+			if (!empty($banner['file']))
+			{
+				$image = false;
+				if ($banner['type'] == TYPE_IMAGE)
+				{
+					// расчитаем размеры картинки:
+					$w = $banner['width'];
+					$h = $banner['height'];
+					$image = cot_rc('banner_image', array(
+						'file' => $banner['file'],
+						'alt' => $banner['alt'],
+						'width' => $w,
+						'height' => $h
+					));
+				}
+				elseif ($banner['type'] == TYPE_FLASH)
+				{
+					$w = $banner['width'];
+					$h = $banner['height'];
+					$image = cot_rc('banner_flash', array(
+						'file' => $banner['file'],
+						'width' => $w,
+						'height' => $h
+					));
+				}
+				if (!empty($image))
+				{
+					if (!empty($banner['clickurl']))
+					{
+						$image = cot_rc_link($url, $image, array('target' => '_blank'));
+					}
+					$temp_array['BANNER'] = cot_rc('banner', array(
+						'banner' => $image
+					));
+				}
+			}
+			if ($banner['type'] == TYPE_CUSTOM)
+			{
+				$temp_array['BANNER'] = cot_rc('banner', array(
+					'banner' => $banner['customcode']
+				));
+			}
+		}
+
+
+		/* === Hook === */
+		foreach ($extp_main as $pl)
+		{
+			include $pl;
+		}
+		/* ===== */
+	}
+	else
+	{
+		// Диалога не существует
+	}
+
+	$return_array = array();
+	foreach ($temp_array as $key => $val)
+	{
+		$return_array[$tagPrefix.$key] = $val;
+	}
+
+	return $return_array;
+}
