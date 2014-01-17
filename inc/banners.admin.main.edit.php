@@ -43,7 +43,7 @@ if ($act == 'save')
 		cot_error($L['ba_err_titleempty'], 'rtitle');
 	}
 	$item['ba_cat'] = cot_import('rcat', 'P', 'TXT');
-	$file = ba_importFile('rfile', $banner['ba_file']);
+	$file = banners_import_file('rfile', $banner['ba_file']);
 	$delFile = cot_import('rdel_rfile', 'P', 'BOL') ? 1 : 0;
 	if ($delFile)
 	{
@@ -217,41 +217,30 @@ $t->assign(array(
 	'FORM_DELETE_URL' => $delUrl,
 ));
 if (!empty($banner['ba_file']))
-{
-	if ($banner['ba_type'] == TYPE_IMAGE)
+{	
+	// расчитаем размеры картинки:	
+	$w = $banner['ba_width'];
+	$h = $banner['ba_height'];
+	if ($h > 100)
 	{
-		// расчитаем размеры картинки:
-		$w = $banner['ba_width'];
-		$h = $banner['ba_height'];
-		if ($h > 100)
-		{
-			$k = $w / $h;
-			$h = 100;
-			$w = intval($h * $k);
-		}
-		$image = cot_rc('banner_image_admin', array(
+		$k = $w / $h;
+		$h = 100;
+		$w = intval($h * $k);
+	}
+	$rc_vars = array(
 			'file' => $banner['ba_file'],
 			'alt' => $banner['ba_alt'],
 			'width' => $w,
 			'height' => $h
-		));
+		);
+	if ($banner['ba_type'] == TYPE_IMAGE)
+	{
+		$image = cot_rc('banner_image', $rc_vars);
 		$t->assign('BANNER_IMAGE', $image);
 	}
 	elseif ($banner['ba_type'] == TYPE_FLASH)
 	{
-		$w = $banner['ba_width'];
-		$h = $banner['ba_height'];
-		if ($h > 100)
-		{
-			$k = $w / $h;
-			$h = 100;
-			$w = intval($h * $k);
-		}
-		$image = cot_rc('banner_flash_admin', array(
-			'file' => $banner['ba_file'],
-			'width' => $w,
-			'height' => $h
-		));
+		$image = cot_rc('banner_flash', $rc_vars);
 		$t->assign('BANNER_IMAGE', $image);
 	}
 }

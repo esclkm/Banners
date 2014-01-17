@@ -17,3 +17,10 @@
 defined('COT_CODE') or die('Wrong URL');
 
 $extension_structure[] = 'banners';
+if ($n = 'banners')
+{
+	require_once(cot_incfile('banners', 'plug'));
+	require_once cot_langfile('banners', 'plug');
+
+	$t = new XTemplate(cot_tplfile('banners.admin.structure', 'plug'));
+}

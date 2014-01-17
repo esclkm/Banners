@@ -174,7 +174,7 @@ $t->assign(array(
 	'SORT_WAY' => cot_selectbox($w, 'w', array('ASC', 'DESC'), array($L['Ascending'], $L['Descending']), false),
 	'FILTER_TRACK_TYPE' => cot_selectbox($fil['track_type'], 'fil[track_type]', array_keys($types), array_values($types)),
 	'FILTER_CLIENT' => cot_selectbox($fil['b.bac_id'], 'fil[b.bac_id]', array_keys($clients), array_values($clients)),
-	'FILTER_CATEGORY' => ba_selectbox_structure('banners', $fil['ba_cat'], 'fil[ba_cat]', '', false, false, true),
+	'FILTER_CATEGORY' => banners_selectbox($fil['ba_cat'], 'fil[ba_cat]', true),
 	'FILTER_DATE_FROM' => cot_selectbox_date($fil['date_from'], 'short', 'fil_df'),
 	'FILTER_DATE_TO' => cot_selectbox_date($fil['date_to'], 'short', 'fil_dt'),
 	'FILTER_VALUES' => $fil

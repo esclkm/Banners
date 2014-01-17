@@ -120,7 +120,7 @@ $pagenav = cot_pagenav('admin', $list_url_path, $d, $totallines, $maxrowsperpage
 $i = $d + 1;
 foreach ($list as $item)
 {
-	$t->assign(banner_generateTags($item, 'LIST_ROW_'));
+	$t->assign(banners_generate_tags($item, 'LIST_ROW_'));
 	
 	$delUrlArr = array_merge($list_url_path, array('act' => 'delete',	'id' => $item['ba_id'], 'd' => $pagenav['current'],'x' => $sys['xk']));
 	$t->assign(array(
@@ -150,7 +150,7 @@ $t->assign(array(
 	'SORT_WAY' => cot_selectbox($w, 'w', array('ASC', 'DESC'), array($L['Ascending'], $L['Descending']), false),
 	'FILTER_PUBLISHED' => cot_selectbox($fil['published'], 'fil[published]', array(0, 1), array($L['No'], $L['Yes'])),
 	'FILTER_CLIENT' => cot_selectbox($fil['bac_id'], 'fil[bac_id]', array_keys($clients), array_values($clients)),
-	'FILTER_CATEGORY' => ba_selectbox_structure('banners', $fil['cat'], 'fil[cat]', '', false, false, true),
+	'FILTER_CATEGORY' => banners_selectbox($fil['cat'], 'fil[cat]', true),
 	'FILTER_VALUES' => $fil
 ));
 

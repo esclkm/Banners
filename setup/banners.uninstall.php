@@ -17,5 +17,5 @@ require(cot_incfile('banners', 'plug'));
 // Удалить категорию с баннерами
 if (file_exists($ba_files_dir))
 {
-	ba_removeDir($ba_files_dir);
+	banners_remove_dir($ba_files_dir);
 }
