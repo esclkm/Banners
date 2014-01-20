@@ -17,7 +17,7 @@
 (defined('COT_CODE') && defined('COT_ADMIN')) or die('Wrong URL.');
 
 
-list($usr['auth_read'], $usr['auth_write'], $usr['isadmin']) = cot_auth('banners', 'any');
+list($usr['auth_read'], $usr['auth_write'], $usr['isadmin']) = cot_auth('plug', 'banners');
 cot_block($usr['isadmin']);
 
 require_once(cot_incfile('banners', 'plug'));
@@ -34,7 +34,7 @@ if(empty($a))
 {
 	$a = 'index';
 }
-if (file_exists(cot_incfile('banners', 'plug', 'admin.'.$n)))
+if (file_exists(cot_incfile('banners', 'plug', 'admin.'.$n.'.'.$a)))
 {
 	$t = new XTemplate(cot_tplfile('banners.admin.'.$n.'.'.$a, 'plug'));
 	require_once cot_incfile('banners', 'plug', 'admin.'.$n.'.'.$a);

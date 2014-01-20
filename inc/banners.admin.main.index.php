@@ -103,6 +103,10 @@ if ($act == 'delete')
 	if (file_exists($item['ba_file']))
 		unlink($item['ba_file']);
 
+	foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+	{
+		cot_extrafield_unlinkfiles($item['ba_' . $exfld['field_name']], $exfld);
+	}
 	cot_message($L['alreadydeletednewentry']." # $id - {$item['ba_title']}");
 	cot_redirect(cot_url('admin', $urlArr, '', true));
 }

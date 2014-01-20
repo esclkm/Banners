@@ -29,6 +29,15 @@ define(TYPE_CUSTOM, 3);
 $db_ba_banners = (isset($db_ba_banners)) ? $db_ba_banners : $db_x.'banners';
 $db_ba_clients = (isset($db_ba_clients)) ? $db_ba_clients : $db_x.'banner_clients';
 $db_ba_tracks = (isset($db_ba_tracks)) ? $db_ba_tracks : $db_x.'banner_tracks';
+$cot_extrafields[$db_ba_banners] = isset($cot_extrafields[$db_ba_banners] ) ? $cot_extrafields[$db_ba_banners]  : array();
+
+/*
+cot::$db->registerTable('banners');
+cot::$db->registerTable('banner_clients');
+cot::$db->registerTable('banner_tracks');
+
+cot_extrafields_register_table('banners');
+*/
 
 $ba_allowed_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'swf');
 $ba_files_dir = 'datas/banners/';

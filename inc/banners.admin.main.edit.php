@@ -111,7 +111,7 @@ if ($act == 'save')
 	$item['ba_customcode'] = cot_import('rcustomcode', 'P', 'HTM');
 	$item['ba_clickurl'] = cot_import('rclickurl', 'P', 'TXT');
 	$item['ba_description'] = cot_import('rdescription', 'P', 'TXT');
-	$item['ba_rsticky'] = cot_import('rsticky', 'P', 'BOL');
+	$item['ba_sticky'] = cot_import('rsticky', 'P', 'BOL');
 	$item['ba_begin'] = cot_import_date('rbegin');
 	$item['ba_expire'] = cot_import_date('rexpire');
 	$item['ba_imptotal'] = cot_import('rimptotal', 'P', 'INT');
@@ -125,6 +125,12 @@ if ($act == 'save')
 
 	$item['ba_created'] = $sys['now'];
 	$item['ba_created_by'] = $usr['id'];
+
+	// Extra fields
+	foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+	{
+		$item['ba_' . $exfld['field_name']] = cot_import_extrafields('r' . $exfld['field_name'], $exfld);
+	}
 
 	if (!$item['ba_id'])
 	{
@@ -153,6 +159,7 @@ if ($act == 'save')
 		{
 			unlink($banner['ba_file']);
 		}
+		cot_extrafield_movefiles();
 		cot_message($L['ba_saved']);
 		
 		cot_redirect(cot_url('admin', array('m' => 'other', 'p' => 'banners', 'a' => 'edit', 'id' => $id), '', true));
@@ -216,6 +223,21 @@ $t->assign(array(
 	'FORM_PUBLISHED' => cot_radiobox(isset($banner['ba_published']) ? $banner['ba_published'] : 1, 'rpublished', array(1, 0), array($L['Yes'], $L['No'])),
 	'FORM_DELETE_URL' => $delUrl,
 ));
+
+foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+{
+	$uname = strtoupper($exfld['field_name']);
+	$exfld_val = cot_build_extrafields('r' . $exfld['field_name'], $exfld, $banner['ba_'.$exfld['field_name']]);
+	$exfld_title =  isset($L['ba_' . $exfld['field_name'] . '_title']) ? $L['ba_' . $exfld['field_name'] . '_title'] : $exfld['field_description'];
+	$t->assign(array(
+		'FORM_' . $uname => $exfld_val,
+		'FORM_' . $uname . '_TITLE' => $exfld_title,
+		'FORM_EXTRAFLD' => $exfld_val,
+		'FORM_EXTRAFLD_TITLE' => $exfld_title
+		));
+	$t->parse('MAIN.FORM.EXTRAFLD');
+}
+
 if (!empty($banner['ba_file']))
 {	
 	// расчитаем размеры картинки:	
