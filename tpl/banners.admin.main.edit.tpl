@@ -76,6 +76,12 @@
                 <td>{PHP.L.ba_expire}:</td>
                 <td>{FORM_PUBLISH_DOWN}</td>
             </tr>
+            <!-- BEGIN: EXTRAFLD -->
+            <tr>
+                <td>{FORM_EXTRAFLD_TITLE}:</td>
+                <td>{FORM_EXTRAFLD}</td>
+            </tr>
+            <!-- END: EXTRAFLD -->
             <tr>
                 <td>{PHP.L.ba_imptotal}:</td>
                 <td>{FORM_IMPTOTAL} 0 - {PHP.L.ba_unlimited}</td>

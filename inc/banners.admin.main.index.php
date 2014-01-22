@@ -49,7 +49,10 @@ else
 {
 	$list_url_path['w'] = $w;
 }
-
+if ($so == 'bac_id')
+{
+	$so = 'b.bac_id';
+}
 
 $cond = array();
 
@@ -62,17 +65,17 @@ if (!empty($fil))
 			continue;
 		if (in_array($key, array('title')))
 		{
-			$cond[$key] = "ba_" . $key . "LIKE '%" . $val . "%'";
+			$cond[$key] = "ba_" . $key . " LIKE '%" . $val . "%'";
 			$list_url_path["fil[{$key}]"] = $val;
 		}
 		elseif ($key == 'bac_id')
 		{
-			$cond[$key] = 'bac_id = '.$val;
+			$cond[$key] = 'b.bac_id = '.$val;
 			$list_url_path["fil[{$key}]"] = $val;
 		}
 		else
 		{
-			$cond[$key] = "ba_" . $key . "='" . $db->query($val)."'";
+			$cond[$key] = "ba_" . $key . "='" . $db->prep($val)."'";
 			$list_url_path["fil[{$key}]"] = $val;
 		}
 	}
@@ -116,7 +119,7 @@ $cond = implode(' AND ', $cond);
 $cond = (!empty($cond)) ? 'WHERE '.$cond : '';
 
 $res = $db->query("SELECT b.*, c.* FROM $db_ba_banners AS b LEFT JOIN $db_ba_clients as c  ON b.bac_id=c.bac_id $cond ORDER BY $so $w LIMIT $d, $maxrowsperpage");
-$totallines = $db->query("SELECT COUNT(*) FROM $db_ba_banners $cond")->fetchColumn();
+$totallines = $db->query("SELECT COUNT(*) FROM $db_ba_banners AS b $cond")->fetchColumn();
 $list = $res->fetchAll();
 
 $pagenav = cot_pagenav('admin', $list_url_path, $d, $totallines, $maxrowsperpage);

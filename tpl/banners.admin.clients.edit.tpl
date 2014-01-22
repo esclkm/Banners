@@ -41,6 +41,12 @@
             <td>{PHP.L.ba_extrainfo}:</td>
             <td>{FORM_EXTRAINFO}</td>
         </tr>
+        <!-- BEGIN: EXTRAFLD -->
+        <tr>
+            <td>{FORM_EXTRAFLD_TITLE}:</td>
+            <td>{FORM_EXTRAFLD}</td>
+        </tr>
+        <!-- END: EXTRAFLD -->
         <tr>
             <td>{PHP.L.ba_published}?:</td>
             <td>{FORM_PUBLISHED}</td>
