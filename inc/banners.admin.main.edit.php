@@ -29,7 +29,7 @@ if (!$id)
 }
 else
 {
-	$banner = $db->query("SELECT * FROM $db_ba_banners WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
+	$banner = $db->query("SELECT * FROM $db_banners WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
 	$adminpath[] = $L['ba_banner_edit'].": ".htmlspecialchars($banner['ba_title']);
 }
 
@@ -127,7 +127,7 @@ if ($act == 'save')
 	$item['ba_created_by'] = $usr['id'];
 
 	// Extra fields
-	foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+	foreach ($cot_extrafields[$db_banners] as $exfld)
 	{
 		$item['ba_' . $exfld['field_name']] = cot_import_extrafields('r' . $exfld['field_name'], $exfld);
 	}
@@ -147,12 +147,12 @@ if ($act == 'save')
 		}
 		if ($id > 0)
 		{
-			$db->update($db_ba_banners, $item, "ba_id = ".(int)$id);
+			$db->update($db_banners, $item, "ba_id = ".(int)$id);
 			cot_log("Edited banner # {$id} - {$data['ba_title']}", 'adm');
 		}
 		else
 		{
-			$db->insert($db_ba_banners, $item);
+			$db->insert($db_banners, $item);
 			cot_log("Added new banner # {$id} - {$item['ba_title']}", 'adm');			
 		}
 		if (!empty($banner['ba_file']) && isset($data['ba_file']) && $banner['ba_file'] != $data['ba_file'] && file_exists($banner['ba_file']))
@@ -183,7 +183,7 @@ $types = array(
 	TYPE_CUSTOM => $L['ba_custom_code']
 );
 
-$sql = $db->query("SELECT bac_id, bac_title FROM $db_ba_clients ORDER BY `bac_title` ASC");
+$sql = $db->query("SELECT bac_id, bac_title FROM $db_banner_clients ORDER BY `bac_title` ASC");
 $clients = $sql->fetchAll(PDO::FETCH_KEY_PAIR);
 $clients = (!$clients) ? array() : $clients;
 
@@ -224,7 +224,7 @@ $t->assign(array(
 	'FORM_DELETE_URL' => $delUrl,
 ));
 
-foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+foreach ($cot_extrafields[$db_banners] as $exfld)
 {
 	$uname = strtoupper($exfld['field_name']);
 	$exfld_val = cot_build_extrafields('r' . $exfld['field_name'], $exfld, $banner['ba_'.$exfld['field_name']]);

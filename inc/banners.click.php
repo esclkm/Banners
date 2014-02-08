@@ -2,10 +2,10 @@
 
 defined('COT_CODE') or die('Wrong URL.');
 
-global $db, $db_ba_tracks, $db_ba_banners, $sys, $cfg;
+global $db, $db_banner_tracks, $db_banners, $sys, $cfg;
 
 $id = cot_import('id', 'G', 'INT');
-$banner = $db->query("SELECT b.*, c.* FROM $db_ba_banners AS b LEFT JOIN $db_ba_clients as c  ON b.bac_id=c.bac_id WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
+$banner = $db->query("SELECT b.*, c.* FROM $db_banners AS b LEFT JOIN $db_banner_clients as c  ON b.bac_id=c.bac_id WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
 if (!$banner)
 {
 	cot_diefatal('banner not found');

@@ -94,19 +94,19 @@ if ($act == 'delete')
 	$id = cot_import('id', 'G', 'INT');
 	cot_check_xg();
 	
-	$item = $db->query("SELECT * FROM $db_ba_banners WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
+	$item = $db->query("SELECT * FROM $db_banners WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
 	if (!$item)
 	{
 		cot_error($L['No_items']." id# ".$id);
 		cot_redirect(cot_url('admin', $urlArr, '', true));
 	}
 	
-	$db->delete($db_ba_banners, "ba_id = ".(int)$id);
-	$db->delete($db_ba_tracks, "ba_id = ".(int)$id);
+	$db->delete($db_banners, "ba_id = ".(int)$id);
+	$db->delete($db_banner_tracks, "ba_id = ".(int)$id);
 	if (file_exists($item['ba_file']))
 		unlink($item['ba_file']);
 
-	foreach ($cot_extrafields[$db_ba_banners] as $exfld)
+	foreach ($cot_extrafields[$db_banners] as $exfld)
 	{
 		cot_extrafield_unlinkfiles($item['ba_' . $exfld['field_name']], $exfld);
 	}
@@ -118,8 +118,8 @@ if ($act == 'delete')
 $cond = implode(' AND ', $cond);
 $cond = (!empty($cond)) ? 'WHERE '.$cond : '';
 
-$res = $db->query("SELECT b.*, c.* FROM $db_ba_banners AS b LEFT JOIN $db_ba_clients as c  ON b.bac_id=c.bac_id $cond ORDER BY $so $w LIMIT $d, $maxrowsperpage");
-$totallines = $db->query("SELECT COUNT(*) FROM $db_ba_banners AS b $cond")->fetchColumn();
+$res = $db->query("SELECT b.*, c.* FROM $db_banners AS b LEFT JOIN $db_banner_clients as c  ON b.bac_id=c.bac_id $cond ORDER BY $so $w LIMIT $d, $maxrowsperpage");
+$totallines = $db->query("SELECT COUNT(*) FROM $db_banners AS b $cond")->fetchColumn();
 $list = $res->fetchAll();
 
 $pagenav = cot_pagenav('admin', $list_url_path, $d, $totallines, $maxrowsperpage);
@@ -138,7 +138,7 @@ foreach ($list as $item)
 	$t->parse('MAIN.LIST_ROW');
 }
 
-$sql = $db->query("SELECT bac_id, bac_title FROM $db_ba_clients ORDER BY `bac_title` ASC");
+$sql = $db->query("SELECT bac_id, bac_title FROM $db_banner_clients ORDER BY `bac_title` ASC");
 $clients = $sql->fetchAll(PDO::FETCH_KEY_PAIR);
 $clients = (!$clients) ? array() : $clients;
 

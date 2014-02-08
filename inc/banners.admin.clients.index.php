@@ -29,13 +29,13 @@ if ($act == 'delete')
 	$id = cot_import('id', 'G', 'INT');
 	cot_check_xg();
 
-	$item = $db->query("SELECT * FROM $db_ba_clients WHERE bac_id = ".(int)$id." LIMIT 1")->fetch();
+	$item = $db->query("SELECT * FROM $db_banner_clients WHERE bac_id = ".(int)$id." LIMIT 1")->fetch();
 	if (!$item)
 	{
 		cot_error($L['No_items']." id# ".$id);
 		cot_redirect(cot_url('admin', $urlArr, '', true));
 	}
-	$db->delete($db_ba_clients, "bac_id = ".(int)$id);
+	$db->delete($db_banner_clients, "bac_id = ".(int)$id);
 
 	cot_message($L['alreadydeletednewentry']." # $id - ".$item['bac_title']);
 	cot_redirect(cot_url('admin', $urlArr, '', true));
@@ -59,8 +59,8 @@ else
 	$list_url_path['w'] = $w;
 }
 
-$res = $db->query("SELECT * FROM $db_ba_clients ORDER BY $so $w LIMIT $d, $maxrowsperpage");
-$totallines = $db->query("SELECT COUNT(*) FROM $db_ba_clients")->fetchColumn();;
+$res = $db->query("SELECT * FROM $db_banner_clients ORDER BY $so $w LIMIT $d, $maxrowsperpage");
+$totallines = $db->query("SELECT COUNT(*) FROM $db_banner_clients")->fetchColumn();;
 $list = $res->fetchAll();
 
 $pagenav = cot_pagenav('admin', $list_url_path, $d, $totallines, $maxrowsperpage);

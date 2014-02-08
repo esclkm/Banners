@@ -26,7 +26,7 @@ require_once cot_langfile('banners', 'plug');
 //cot_rc_link_file($cfg['plugins_dir'].'/banners/tpl/admin.css');
 // Роутер
 // Only if the file exists...
-if (!in_array($n, array('clients', 'track')))
+if (!in_array($n, array('clients', 'track', 'queries')))
 {
 	$n = 'main';
 }

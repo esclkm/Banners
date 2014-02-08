@@ -3,7 +3,7 @@
 (defined('COT_CODE') && defined('COT_ADMIN')) or die('Wrong URL.');
 
 
-global $L, $adminpath, $cfg, $sys, $db_ba_banners, $db_ba_clients, $db_ba_tracks, $db, $structure;
+global $L, $adminpath, $cfg, $sys, $db_banners, $db_banner_clients, $db_banner_tracks, $db, $structure;
 
 $adminpath[] = '&nbsp;'.$L['ba_tracks'];
 
@@ -95,15 +95,15 @@ $orderby = "$so $w";
 $where = array_filter($where);
 $where = ($where) ? 'WHERE '.implode(' AND ', $where) : '';
 $sql = "SELECT a.track_date , a.track_type , a.track_count, a.ba_id, b.ba_title, b.ba_cat, cl.bac_title
-            FROM $db_ba_tracks AS a
-            LEFT JOIN $db_ba_banners AS b ON b.ba_id=a.ba_id
-            LEFT JOIN $db_ba_clients AS cl ON cl.bac_id=b.bac_id
+            FROM $db_banner_tracks AS a
+            LEFT JOIN $db_banners AS b ON b.ba_id=a.ba_id
+            LEFT JOIN $db_banner_clients AS cl ON cl.bac_id=b.bac_id
             $where ORDER BY $orderby LIMIT {$d}, {$maxrowsperpage}";
 
 $sqlCount = "SELECT COUNT(*)
-            FROM $db_ba_tracks AS a
-            LEFT JOIN $db_ba_banners AS b ON b.ba_id=a.ba_id
-            LEFT JOIN $db_ba_clients AS cl ON cl.bac_id=b.bac_id
+            FROM $db_banner_tracks AS a
+            LEFT JOIN $db_banners AS b ON b.ba_id=a.ba_id
+            LEFT JOIN $db_banner_clients AS cl ON cl.bac_id=b.bac_id
             $where";
 
 $totallines = $db->query($sqlCount, $params)->fetchColumn();
@@ -155,7 +155,7 @@ foreach ($sortFields as $fld)
 	}
 }
 
-$sql = $db->query("SELECT bac_id, bac_title FROM $db_ba_clients ORDER BY `bac_title` ASC");
+$sql = $db->query("SELECT bac_id, bac_title FROM $db_banner_clients ORDER BY `bac_title` ASC");
 $clients = $sql->fetchAll(PDO::FETCH_KEY_PAIR);
 $clients = (!$clients) ? array() : $clients;
 

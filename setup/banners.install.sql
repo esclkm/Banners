@@ -55,6 +55,14 @@ CREATE TABLE IF NOT EXISTS `cot_banner_tracks` (
   INDEX `idx_banner_id` (`ba_id`)
 )  ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `cot_banner_queries` (
+  `query_id` INTEGER NOT NULL auto_increment,
+  `query_cat` VARCHAR(255) NOT NULL DEFAULT '',
+  `query_client` VARCHAR(255) NOT NULL DEFAULT '',
+  `query_string` VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`query_id`)
+)  ENGINE = MYISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 -- Default banners categories
 -- INSERT INTO `cot_structure` (`structure_area`, `structure_code`, `structure_path`, `structure_tpl`, `structure_title`,
 --                             `structure_desc`, `structure_icon`, `structure_locked`, `structure_count`) VALUES

@@ -3,7 +3,7 @@
 (defined('COT_CODE') && defined('COT_ADMIN')) or die('Wrong URL.');
 
 
-global $L, $cfg, $db_ba_banners, $db_ba_clients, $db_ba_tracks, $db;
+global $L, $cfg, $db_banners, $db_banner_clients, $db_banner_tracks, $db;
 
 $so = cot_import('so', 'G', 'ALP'); // order field name without 'ba_'
 $w = cot_import('w', 'G', 'ALP', 4); // order way (asc, desc)
@@ -89,12 +89,12 @@ else
 
 if (!empty($baWhere))
 {
-	$where['banners'] = "ba_id IN (SELECT b.ba_id FROM $db_ba_banners AS b WHERE ".implode(' AND ', $baWhere)." )";
+	$where['banners'] = "ba_id IN (SELECT b.ba_id FROM $db_banners AS b WHERE ".implode(' AND ', $baWhere)." )";
 }
 
 $where = implode(' AND ', $where);
 
-$res = $db->delete($db_ba_tracks, $where, $params);
+$res = $db->delete($db_banner_tracks, $where, $params);
 
 if ($res > 0)
 {

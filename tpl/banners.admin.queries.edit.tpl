@@ -18,43 +18,21 @@
 <!-- ENDIF -->
 
 <!-- BEGIN: FORM -->
-<form action="{FORM_ID|cot_url('admin', 'm=other&p=banners&n=clients&a=edit&id=$this')}" method="POST">
+<form action="{FORM_ID|cot_url('admin', 'm=other&p=banners&n=queries&a=edit&id=$this')}" method="POST">
     <input type="hidden" name="act" value="save" />
 
     <table class="cells">
         <tr>
-            <td class="width20">{PHP.L.Title}:</td>
-            <td>{FORM_TITLE}</td>
+            <td class="width20">{PHP.L.Category}:</td>
+            <td>{FORM_CAT}</td>
         </tr>
         <tr>
-            <td>{PHP.L.Email}:</td>
-            <td>{FORM_EMAIL}</td>
+            <td>{PHP.L.ba_client}:</td>
+            <td>{FORM_CLIENT}</td>
         </tr>
         <tr>
-            <td>{PHP.L.ba_purchase_type}:</td>
-            <td>{FORM_PURCHASE_TYPE}</td>
-        </tr>
-        <tr>
-            <td>{PHP.L.ba_track_impressions}:</td>
-            <td>{FORM_TRACK_IMP} <br />{PHP.L.ba_track_impressions_tip}</td>
-        </tr>
-        <tr>
-            <td>{PHP.L.ba_track_clicks}:</td>
-            <td>{FORM_TRACK_CLICKS} <br />{PHP.L.ba_track_clicks_tip}</td>
-        </tr>
-        <tr>
-            <td>{PHP.L.ba_extrainfo}:</td>
-            <td>{FORM_EXTRAINFO}</td>
-        </tr>
-        <!-- BEGIN: EXTRAFLD -->
-        <tr>
-            <td>{FORM_EXTRAFLD_TITLE}:</td>
-            <td>{FORM_EXTRAFLD}</td>
-        </tr>
-        <!-- END: EXTRAFLD -->
-        <tr>
-            <td>{PHP.L.ba_published}?:</td>
-            <td>{FORM_PUBLISHED}</td>
+            <td>{PHP.L.ba_query}:</td>
+            <td>{FORM_STRING}</td>
         </tr>
     </table>
 

@@ -24,7 +24,7 @@ if (!$id)
 }
 else
 {
-	$client = $db->query("SELECT * FROM $db_ba_clients WHERE bac_id = ".(int)$id." LIMIT 1")->fetch();
+	$client = $db->query("SELECT * FROM $db_banner_clients WHERE bac_id = ".(int)$id." LIMIT 1")->fetch();
 	$adminpath[] = $L['ba_banner_edit'].": ".htmlspecialchars($client['bac_title']);
 }
 
@@ -47,11 +47,12 @@ if ($act == 'save')
 	{
 		if ($id > 0)
 		{
-			$db->update($db_ba_clients, $item, "bac_id = ".(int)$id);
+			$db->update($db_banner_clients, $item, "bac_id = ".(int)$id);
 		}
 		else
 		{
-			$db->insert($db_ba_clients, $item);
+			$db->insert($db_banner_clients, $item);
+			$id = $db->lastInsertId();
 		}
 		
 		cot_message($L['ba_saved']);

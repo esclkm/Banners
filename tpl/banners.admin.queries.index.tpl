@@ -19,9 +19,10 @@
 <table class="cells">
     <tr>
         <td class="coltop"></td>
-        <td class="coltop">{PHP.L.Title}</td>
-        <td class="coltop">{PHP.L.ba_purchase_type}</td>
-        <td class="coltop">{PHP.L.ba_published}</td>
+        <td class="coltop">#</td>
+        <td class="coltop">{PHP.L.Category}</td>
+        <td class="coltop">{PHP.L.ba_client}</td>
+		<td class="coltop">{PHP.L.ba_query}</td>
         <td class="coltop">{PHP.L.Edit}</td>
         <td class="coltop">{PHP.L.Delete}</td>
         <td class="coltop">ID</td>
@@ -29,11 +30,11 @@
     <!-- BEGIN: LIST_ROW -->
     <tr>
         <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_NUM}</td>
-        <td class="{LIST_ROW_ODDEVEN}"><a href="{LIST_ROW_URL}">{LIST_ROW_TITLE}</a></td>
-        <td class="{LIST_ROW_ODDEVEN}">{LIST_ROW_PURCHASE_TEXT}</td>
-        <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_PUBLISHED}</td>
+        <td class="{LIST_ROW_ODDEVEN}">{LIST_ROW_CAT}</td>
+        <td class="{LIST_ROW_ODDEVEN}">{LIST_ROW_CLIENT}</td>
+        <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_STRING}</td>
         <td class="{LIST_ROW_ODDEVEN} centerall">
-            <a href="{LIST_ROW_ID|cot_url('admin', 'm=other&p=banners&n=clients&a=edit&id=$this')}"><img src="images/icons/default/arrow-follow.png" /></a>
+            <a href="{LIST_ROW_URL}"><img src="images/icons/default/arrow-follow.png" /></a>
         </td>
         <td class="{LIST_ROW_ODDEVEN} centerall">
             <a href="{LIST_ROW_DELETE_URL}" class="confirmLink"><img src="images/icons/default/delete.png" /></a>
@@ -57,5 +58,5 @@
 </div>
 <!-- ENDIF -->
 
-<a href="{PHP|cot_url('admin', 'm=other&p=banners&n=clients&a=edit')}" class="button">{PHP.L.Add}</a>
+<a href="{PHP|cot_url('admin', 'm=other&p=banners&n=queries&a=edit')}" class="button">{PHP.L.Add}</a>
 <!-- END: MAIN -->
