@@ -36,7 +36,8 @@ cot_extrafields_register_table('banners');
 
 $ba_allowed_ext = array('bmp', 'gif', 'jpg', 'jpeg', 'swf');
 $ba_files_dir = 'datas/banners/';
-
+$banner_widget = (isset($banner_widget)) ? $banner_widget : array();
+$banner_queries = (isset($banner_queries)) ? $banner_queries : array();
 require_once cot_incfile('banners', 'plug', 'resources');
 
 /**
@@ -47,16 +48,14 @@ require_once cot_incfile('banners', 'plug', 'resources');
  * @param string $cat  Category, semicolon separated
  * @param string $order  'order' OR 'rand'
  * @param int $cnt  Banner count
- * @param int|bool $client
- * @param int|bool $subcats
  * @return string
  *
  */
-function banner_widget($cat = '', $cnt = 1, $tpl = 'banners', $order = 'order', $client = false, $subcats = false, $cond = '')
+function banner_widget($cat = '', $cnt = 1, $tpl = 'banners')
 {
 	global $sys, $cache_ext, $usr, $cfg;
 
-	$banners = banners_fetch($cat, $cnt, $client, $order, $cond);
+	$banners = banners_fetch($cat, $cnt, $cond);
 
 	if (!$banners)
 		return '';
@@ -84,14 +83,36 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners', $order = 'order', 
 	return $t->text();
 }
 
-function banners_fetch($cat = '', $cnt = 1, $client = 0, $order = '', $sqlcond = '')
+function banners_fetch($cat = '', $cnt = 1)
 {
-	global $db, $cfg, $db_banner_tracks, $sys, $db_banners;
+	global $db, $cfg, $db_banner_tracks, $sys, $db_banners, $banner_queries;
 
 	$cats = array();
-	$client = (int)$client;
 	$cnt = (int)$cnt;
-
+	
+	$cond = array(
+		'ba_published' => 'ba_published=1',
+		'ba_begin' => "ba_begin <='".(int)$sys['now']."'",
+		'ba_expire' => "(ba_expire >='".(int)$sys['now']."' OR ba_expire IS NULL OR ba_expire = 0)",
+		'ba_imptotal' => "(ba_imptotal = 0 OR ba_impmade < ba_imptotal)"
+	);
+	
+	if((int)$cat > 0)
+	{
+		$cat = '';
+		$query = $db->query("SELECT * FROM $db_banner_queries WHERE query_id = ".(int)$cat." LIMIT 1")->fetch();
+		$cat = $query['query_cat'];
+		if((int)$query['query_client'])
+		{
+			$cond['client'] = 'bac_id = '.(int)$query['query_client'];
+		}
+		if((int)$query['query_string'])
+		{
+			$cond['dop'] = eval($query['query_string']);
+		}
+		
+	}
+	
 	$cat = str_replace(' ', '', $cat);
 	$cat = preg_replace('/;;+/', ';', $cat);
 
@@ -116,43 +137,57 @@ function banners_fetch($cat = '', $cnt = 1, $client = 0, $order = '', $sqlcond =
 		}
 		$cats = array_unique($cats);
 	}
+	
 
-	$cond = array(
-		'ba_published' => 'ba_published=1',
-		'ba_begin' => "ba_begin <='".(int)$sys['now']."'",
-		'ba_expire' => "(ba_expire >='".(int)$sys['now']."' OR ba_expire IS NULL OR ba_expire = 0)",
-		'ba_imptotal' => "(ba_imptotal = 0 OR ba_impmade < ba_imptotal)"
-	);
 
 	if (count($cats) > 0)
 	{
 		$cond['ba_cat'] = 'ba_cat IN ("'.implode('", "', $cats).'")';
 	}
 
-	if ($client)
-	{
-		$cond['client'] = 'bac_id = '.(int)$client;
-	}
-
-	if (!empty($sqlcond))
-	{
-		if(is_array($sqlcond))
-		{
-			$cond = array_merge($cond, $sqlcond);
-		}
-		else
-		{
-			$cond['sqlcond'] = $sqlcond;
-		}
-	}
-
-	$ord = ($order == 'rand') ? 'RAND()' : "ba_lastimp ASC";
+	$ord = ($cfg['plugin']['banners']['bannersort'] == 'random') ? 'RAND()' : "ba_lastimp ASC";
 
 	$where = (!empty($cond)) ? ' WHERE '.implode(' AND ', $cond) : '';
 	$banners = $db->query("SELECT * FROM $db_banners "
 			."$where ORDER BY $ord LIMIT $cnt")->fetchAll();
 
 	return $banners;
+}
+
+function banners_load()
+{
+	global $banner_widget, $banner_queries;
+	$return_banners = array();
+	if (is_array($banner_widget))
+	{
+		$counts = array_count_values($banner_widget);
+		$queries = array();
+		foreach($counts as $val => $count)
+		{
+			if((int)$val > 0)
+			{
+				$queries[] = $val;
+			}
+		}
+		if(count($queries))
+		{
+			$querysql = $db->query("SELECT * FROM $db_banner_queries WHERE query_id IN ".implode(', ', $queries));
+			while($q = $querysql->fetch())
+			{
+				$banner_queries[$q['query_id']] = $q;
+			}
+		}
+		$banners_all = array();
+		foreach ($counts as $val => $count)
+		{
+			$banners = banners_fetch($val, $count);
+			foreach($banners as $banner)
+			{
+				foreach
+				$return_banners = b;
+			}
+		}
+	}
 }
 
 function banner_impress($bannerid, $type = 'impress')
@@ -469,14 +504,15 @@ function banners_image($banner)
 			$res .= ($banner['ba_type'] == TYPE_IMAGE) ? 'image' : 'flash';
 			$res .= (!empty($banner['ba_clickurl'])) ? '_link' : '';
 			
-			// расчитаем размеры картинки:
-			$image = cot_rc($res, array(
-				'file' => $banner['ba_file'],
-				'alt' => $banner['ba_alt'],
-				'width' => $banner['ba_width'],
-				'height' => $banner['ba_height'],
-				'href' => $url
-			));
+			$rc_array = array();
+			foreach ($banner as $key => $b)
+			{
+				$k = preg_replace('/^ba_(.+)/', '$1', $key);
+				$rc_array[$k] = $b;
+			}
+			$rc_array['href'] = $url;
+
+			$image = cot_rc($res, $rc_array);
 		}
 	}
 	if ($banner['type'] == TYPE_CUSTOM)
@@ -485,3 +521,5 @@ function banners_image($banner)
 	}
 	return $image;
 }
+
+

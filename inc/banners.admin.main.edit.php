@@ -153,6 +153,7 @@ if ($act == 'save')
 		else
 		{
 			$db->insert($db_banners, $item);
+			$id = $db->lastInsertId();
 			cot_log("Added new banner # {$id} - {$item['ba_title']}", 'adm');			
 		}
 		if (!empty($banner['ba_file']) && isset($data['ba_file']) && $banner['ba_file'] != $data['ba_file'] && file_exists($banner['ba_file']))

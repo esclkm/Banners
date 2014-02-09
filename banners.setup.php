@@ -12,7 +12,7 @@
 [BEGIN_COT_EXT]
 Name=Banners
 Description=Banner rotation plugin with statistics
-Version=1.1.0
+Version=1.1.2
 Date=January 10, 2013
 Author= Alex
 Copyright=(c) Portal30 studio 2013
@@ -29,6 +29,7 @@ Recommends_plugins=
 purchase_type=10:select:1,2,3,4,5:3:
 track_impressions=15:radio::0:
 track_clicks=20:radio::0:
+bannersort=25:select:random,lastshow:lastshow:
 [END_COT_EXT_CONFIG]
 
 [BEGIN_COT_EXT_CONFIG_STRUCTURE]

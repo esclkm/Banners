@@ -89,3 +89,10 @@ $L['cfg_purchase_type_params'] = array(
 );
 $L['cfg_track_impressions'] = array($L['ba_track_impressions'], $L['ba_track_impressions_tip']);
 $L['cfg_track_clicks'] = array($L['ba_track_clicks'], $L['ba_track_clicks_tip']);
+
+
+$L['cfg_bannersort'] = array('Сортировка баннеров');
+$L['cfg_bannersort_params'] = array(
+   "Случайно",
+	"Последний просмотр"
+);
