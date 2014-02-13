@@ -57,30 +57,18 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners')
 
 	$banners = banners_fetch($cat, $cnt, $cond);
 
-	if (!$banners)
-		return '';
-
 	// Display the items
 	$t = new XTemplate(cot_tplfile($tpl, 'plug'));
-
-	foreach ($banners as $banner)
+	
+	for ($i = count($banner_widget); $i < count($banner_widget)+$cnt; $i++)
 	{
-		// Если включено кеширование и это незарег не засчитываем показ. Баннер будет запрошен аяксом
-		if (!(!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext]))
-		{
-			if ($cfg["plugin"]['banners']['track_impressions'] ||
-				($banner['ba_track_impressions'] == 1) ||
-				($banner['ba_track_impressions'] == -1 && $banner['bac_track_impressions'] == 1))
-			{
-				banner_impress($banner['ba_id']);
-			}
-		}
-		$t->assign(banners_generate_tags($banner, 'ROW_'));
-		$t->parse('MAIN.ROW');
+		$t->assign('BANNER_POSITION', '{BANNER_POSITION_'.$i.'}');
+		$t->parse('MAIN.ROW');		
 	}
 
-	$t->parse();
-	return $t->text();
+
+	$t->parse('MAIN');
+	return $t->text('MAIN');
 }
 
 function banners_fetch($cat = '', $cnt = 1)
@@ -156,8 +144,9 @@ function banners_fetch($cat = '', $cnt = 1)
 
 function banners_load()
 {
-	global $banner_widget, $banner_queries;
+	global $banner_widget, $banner_queries, $cfg, $db, $db_banner_queries;
 	$return_banners = array();
+	$banner_id = array();
 	if (is_array($banner_widget))
 	{
 		$counts = array_count_values($banner_widget);
@@ -186,10 +175,30 @@ function banners_load()
 			foreach($banners as $banner)
 			{
 				$return_banners[$keys[i]] = banners_image($banner);
+				
+				if (!(!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext]))
+				{
+					if ($cfg["plugin"]['banners']['track_impressions'] ||
+						($banner['ba_track_impressions'] == 1) ||
+						($banner['ba_track_impressions'] == -1 && $banner['bac_track_impressions'] == 1))
+					{
+						$banner_id[] = $banner['ba_id'];
+					}
+				}
 			}
 		}
+		
+		banner_impress($banner_id, 'impress');
 	}
 	return $return_banners;
+}
+
+function banner_replacer (&$ouput, $loaded_banners)
+{
+	foreach ($loaded_banners as $key => $banner)
+	{
+		$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
+	}
 }
 
 function banner_impress($bannerid, $type = 'impress')
