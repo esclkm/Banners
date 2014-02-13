@@ -53,7 +53,7 @@ require_once cot_incfile('banners', 'plug', 'resources');
  */
 function banner_widget($cat = '', $cnt = 1, $tpl = 'banners')
 {
-	global $sys, $cache_ext, $usr, $cfg;
+	global $sys, $cache_ext, $usr, $cfg, $banner_widget;
 
 	$banners = banners_fetch($cat, $cnt, $cond);
 
@@ -177,17 +177,19 @@ function banners_load()
 				$banner_queries[$q['query_id']] = $q;
 			}
 		}
-		$banners_all = array();
+
 		foreach ($counts as $val => $count)
 		{
 			$banners = banners_fetch($val, $count);
+			$keys = array_keys($banner_widget, $val);
+			$i = 0;
 			foreach($banners as $banner)
 			{
-				foreach
-				$return_banners = b;
+				$return_banners[$keys[i]] = banners_image($banner);
 			}
 		}
 	}
+	return $return_banners;
 }
 
 function banner_impress($bannerid, $type = 'impress')
