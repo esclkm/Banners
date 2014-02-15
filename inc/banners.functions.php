@@ -55,19 +55,22 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners')
 {
 	global $sys, $cache_ext, $usr, $cfg, $banner_widget;
 
-	$banners = banners_fetch($cat, $cnt, $cond);
-
 	// Display the items
 	$t = new XTemplate(cot_tplfile($tpl, 'plug'));
+
+	$init = count($banner_widget);
 	
-	for ($i = count($banner_widget); $i < count($banner_widget)+$cnt; $i++)
+	for ($i = $init; $i < $init+$cnt; $i++)
 	{
-		$t->assign('BANNER_POSITION', '{BANNER_POSITION_'.$i.'}');
+		$banner_widget[$i] = $cat;
+		$t->assign(array(
+			'ROW_BANNER' => '{BANNER_POSITION_'.$i.'}',
+			'ROW_CAT' => $cat
+		));
 		$t->parse('MAIN.ROW');		
 	}
-
-
 	$t->parse('MAIN');
+	
 	return $t->text('MAIN');
 }
 
@@ -174,7 +177,7 @@ function banners_load()
 			$i = 0;
 			foreach($banners as $banner)
 			{
-				$return_banners[$keys[i]] = banners_image($banner);
+				$return_banners[$keys[$i]] = banners_image($banner);
 				
 				if (!(!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext]))
 				{
@@ -185,20 +188,13 @@ function banners_load()
 						$banner_id[] = $banner['ba_id'];
 					}
 				}
+				$i++;
 			}
 		}
 		
 		banner_impress($banner_id, 'impress');
 	}
 	return $return_banners;
-}
-
-function banner_replacer (&$ouput, $loaded_banners)
-{
-	foreach ($loaded_banners as $key => $banner)
-	{
-		$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
-	}
 }
 
 function banner_impress($bannerid, $type = 'impress')
@@ -236,10 +232,10 @@ function banner_impress($bannerid, $type = 'impress')
 			{
 				$vals .= ', ';
 			}
-			$vals = "(1, ".(int)$track_type.", ".(int)$bid.", $trackDate)";
+			$vals .= "(1, ".(int)$track_type.", ".(int)$bid.", $trackDate)";
 		}
 	}
-	$db->query("INSERT INTO $db_banner_tracks $fields VALUES $fields ON DUPLICATE KEY UPDATE track_count=track_count+1");
+	$db->query("INSERT INTO $db_banner_tracks $fields VALUES $vals ON DUPLICATE KEY UPDATE track_count=track_count+1");
 }
 
 /**
