@@ -99,18 +99,20 @@ function banners_fetch($cat = '', $cnt = 1)
 		'ba_imptotal' => "(ba_imptotal = 0 OR ba_impmade < ba_imptotal)"
 	);
 	
+
 	if((int)$cat > 0 && isset($banner_queries[$cat]))
 	{
-		$cat = '';
 		$query = $banner_queries[$cat];
 		$cat = $query['query_cat'];
 		if((int)$query['query_client'])
 		{
 			$cond['client'] = 'bac_id = '.(int)$query['query_client'];
 		}
-		if((int)$query['query_string'])
+		if($query['query_string'])
 		{
-			$cond['dop'] = eval($query['query_string']);
+			$bstr = "\$bstr = ".htmlspecialchars_decode($query['query_string']).";";
+			eval($bstr);
+			$cond['dop'] = $bstr;
 		}
 		
 	}
@@ -148,7 +150,7 @@ function banners_fetch($cat = '', $cnt = 1)
 	}
 
 	$ord = ($cfg['plugin']['banners']['bannersort'] == 'random') ? 'RAND()' : "ba_lastimp ASC";
-
+	$cond = array_diff($cond, array(0, null, ''));
 	$where = (!empty($cond)) ? ' WHERE '.implode(' AND ', $cond) : '';
 	$banners = $db->query("SELECT * FROM $db_banners "
 			."$where ORDER BY $ord LIMIT $cnt")->fetchAll();
@@ -174,7 +176,7 @@ function banners_load()
 		}
 		if(count($queries))
 		{
-			$querysql = $db->query("SELECT * FROM $db_banner_queries WHERE query_id IN ".implode(', ', $queries));
+			$querysql = $db->query("SELECT * FROM $db_banner_queries WHERE query_id IN (".implode(', ', $queries).")");
 			while($q = $querysql->fetch())
 			{
 				$banner_queries[$q['query_id']] = $q;
@@ -264,32 +266,35 @@ function banner_impress($bannerid, $type = 'impress')
 		$banner_implode = "ba_id =".(int)$bannerid."";
 		$bannerid = array($bannerid);
 	}
-	if ($type == 'impress')
+	if (count($bannerid))
 	{
-		$db->query("UPDATE $db_banners SET ba_impmade = ba_impmade+1, ba_lastimp=".(int)$sys['now']." WHERE $banner_implode");
-		$track_type = 1;
-	}
-	else
-	{
-		$db->query("UPDATE $db_banners SET ba_clicks = ba_clicks+1 WHERE $banner_implode");
-		$track_type = 2;
-	}
-
-	$trackDate = cot_stamp2date(date('Y-m-d H', $sys['now']).':00:00');
-	$fields = '(track_count, track_type, ba_id, track_date)';
-	$vals = '';
-	foreach ($bannerid as $bid)
-	{
-		if ((int)$bid > 0)
+		if ($type == 'impress')
 		{
-			if (!empty($vals))
-			{
-				$vals .= ', ';
-			}
-			$vals .= "(1, ".(int)$track_type.", ".(int)$bid.", $trackDate)";
+			$db->query("UPDATE $db_banners SET ba_impmade = ba_impmade+1, ba_lastimp=".(int)$sys['now']." WHERE $banner_implode");
+			$track_type = 1;
 		}
+		else
+		{
+			$db->query("UPDATE $db_banners SET ba_clicks = ba_clicks+1 WHERE $banner_implode");
+			$track_type = 2;
+		}
+
+		$trackDate = cot_stamp2date(date('Y-m-d H', $sys['now']).':00:00');
+		$fields = '(track_count, track_type, ba_id, track_date)';
+		$vals = '';
+		foreach ($bannerid as $bid)
+		{
+			if ((int)$bid > 0)
+			{
+				if (!empty($vals))
+				{
+					$vals .= ', ';
+				}
+				$vals .= "(1, ".(int)$track_type.", ".(int)$bid.", $trackDate)";
+			}
+		}
+		$db->query("INSERT INTO $db_banner_tracks $fields VALUES $vals ON DUPLICATE KEY UPDATE track_count=track_count+1");
 	}
-	$db->query("INSERT INTO $db_banner_tracks $fields VALUES $vals ON DUPLICATE KEY UPDATE track_count=track_count+1");
 }
 
 /**

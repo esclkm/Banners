@@ -14,15 +14,13 @@
  * @copyright Portal30 2013 http://portal30.ru
  */
 defined('COT_CODE') or die('Wrong URL.');
+global $loaded_banners;
 
-if (!defined('COT_ADMIN'))
+if (is_array($loaded_banners))
 {
-	//require_once cot_incfile('banners', 'plug');
-	$loaded_banners = banners_load();
 
 	foreach ($loaded_banners as $key => $banner)
 	{
 		$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
 	}
 }
-

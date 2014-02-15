@@ -18,18 +18,17 @@
 
 <table class="cells">
     <tr>
-        <td class="coltop"></td>
-        <td class="coltop">#</td>
+        <td class="coltop">ID</td>
         <td class="coltop">{PHP.L.Category}</td>
         <td class="coltop">{PHP.L.ba_client}</td>
 		<td class="coltop">{PHP.L.ba_query}</td>
         <td class="coltop">{PHP.L.Edit}</td>
         <td class="coltop">{PHP.L.Delete}</td>
-        <td class="coltop">ID</td>
+
     </tr>
     <!-- BEGIN: LIST_ROW -->
     <tr>
-        <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_NUM}</td>
+        <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_ID}</td>
         <td class="{LIST_ROW_ODDEVEN}">{LIST_ROW_CAT}</td>
         <td class="{LIST_ROW_ODDEVEN}">{LIST_ROW_CLIENT}</td>
         <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_STRING}</td>
@@ -39,7 +38,6 @@
         <td class="{LIST_ROW_ODDEVEN} centerall">
             <a href="{LIST_ROW_DELETE_URL}" class="confirmLink"><img src="images/icons/default/delete.png" /></a>
         </td>
-        <td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_ID}</td>
     </tr>
     <!-- END: LIST_ROW -->
 
