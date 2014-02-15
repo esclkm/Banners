@@ -10,15 +10,11 @@
 $(function() {
     var cats = new Array();
     var cnt = 0;
-    $('.banner-loading').each(function(){
-        var id = $(this).attr('id');
-        id = parseInt(id.replace('banner_', ''));
-        var cat = $(this).attr('banner_category');
-        if(id > 0){
-            cnt++;
-            cats[cnt] = cat;
-            $(this).attr('id', 'swban_'+cnt);
-        }
+    $('.widget.loading').each(function(){
+        var cat = $(this).attr('data-bannerid');
+        cnt++;
+        cats[cnt] = cat;
+        $(this).attr('id', 'swban_'+cnt);
     });
 
     if(cnt > 0){
@@ -27,7 +23,7 @@ $(function() {
                 alert(data.error)
             }else{
                 $.each(data.banners, function(index, value) {
-                    $('#swban_'+index).html(value);
+                    $('#swban_'+index).html(value).removeAttr('id').removeAttr('data-bannerid').removeClass('loading');
                 });
             }
         }, 'json');
