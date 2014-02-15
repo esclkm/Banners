@@ -15,12 +15,14 @@
  */
 defined('COT_CODE') or die('Wrong URL.');
 
-//require_once cot_incfile('banners', 'plug');
-$loaded_banners = banners_load();
-
-foreach ($loaded_banners as $key => $banner)
+if (!defined('COT_ADMIN'))
 {
-	$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
-}
+	//require_once cot_incfile('banners', 'plug');
+	$loaded_banners = banners_load();
 
+	foreach ($loaded_banners as $key => $banner)
+	{
+		$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
+	}
+}
 

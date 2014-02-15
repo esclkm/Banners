@@ -11,10 +11,6 @@ defined('COT_CODE') or die('Wrong URL.');
  */
 global $sys;
 
-$ret = array(
-	'error' => ''
-);
-
 $banner_widget = cot_import('cats', 'P', 'ARR');
 //     cot_watch($cats);
 if (!$banner_widget)

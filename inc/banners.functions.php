@@ -62,11 +62,15 @@ function banner_widget($cat = '', $cnt = 1, $tpl = 'banners')
 	
 	for ($i = $init; $i < $init+$cnt; $i++)
 	{
-		$banner_widget[$i] = $cat;
-		$baclass = '';
+
 		if (!empty($cache_ext) && $usr['id'] == 0 && $cfg['cache_'.$cache_ext])
 		{
 			$baclass = 'loading';
+		}
+		else
+		{
+			$banner_widget[$i] = $cat;
+			$baclass = '';
 		}
 		
 		$t->assign(array(

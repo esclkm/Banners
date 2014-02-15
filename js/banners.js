@@ -19,12 +19,13 @@ $(function() {
 
     if(cnt > 0){
         $.post('index.php?e=banners&a=ajax', {cats: cats, x : bannerx}, function(data){
-            if(data.error != ''){
-                alert(data.error)
-            }else{
-                $.each(data.banners, function(index, value) {
+            if(typeof(data.error) == 'undefined' || data.error === null){
+                $.each(data, function(index, value) {
                     $('#swban_'+index).html(value).removeAttr('id').removeAttr('data-bannerid').removeClass('loading');
                 });
+
+            }else{
+                alert(data.error);
             }
         }, 'json');
     }
