@@ -64,7 +64,7 @@ foreach ($list as $item)
 	));
 	$t->parse('MAIN.LIST_ROW');
 }
-
+cot_display_messages($t);
 $t->assign(array(
 	'LIST_PAGINATION' => $pagenav['main'],
 	'LIST_PAGEPREV' => $pagenav['prev'],

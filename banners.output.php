@@ -24,3 +24,4 @@ if (is_array($loaded_banners))
 		$output = str_replace("{BANNER_POSITION_".$key."}", $banner, $output);
 	}
 }
+$output = preg_replace("/\{BANNER_POSITION_(\d+)\}/", '', $output);

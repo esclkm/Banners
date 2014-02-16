@@ -179,7 +179,7 @@ $t->assign(array(
 	'FILTER_DATE_TO' => cot_selectbox_date($fil['date_to'], 'short', 'fil_dt'),
 	'FILTER_VALUES' => $fil
 ));
-
+cot_display_messages($t);
 $t->assign(array(
 	'PAGE_TITLE' => $L['ba_tracks'],
 ));

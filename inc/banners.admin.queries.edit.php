@@ -49,7 +49,7 @@ if ($act == 'save')
 		
 		cot_message($L['ba_saved']);
 
-		cot_redirect(cot_url('admin', array('m' => 'other', 'p' => 'banners', 'n' => 'queries', 'a' => 'edit', 'id' => $id), '', true));
+		cot_redirect(cot_url('admin', array('m' => 'other', 'p' => 'banners', 'n' => 'queries'), '', true));
 	}
 }
 
@@ -68,7 +68,7 @@ $t->assign(array(
 	'FORM_DELETE_URL' => $delUrl,
 ));
 
-$t->parse('MAIN.FORM');
+cot_display_messages($t);
 
 $t->assign(array(
 	'PAGE_TITLE' => isset($client['query_id']) ? $L['ba_query_edit'].": ".htmlspecialchars($client['query_id']) : $L['ba_query_new'],

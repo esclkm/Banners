@@ -160,7 +160,7 @@ $t->assign(array(
 	'FILTER_CATEGORY' => banners_selectbox($fil['cat'], 'fil[cat]', true),
 	'FILTER_VALUES' => $fil
 ));
-
+cot_display_messages($t);
 $t->assign(array(
 	'PAGE_TITLE' => $L['ba_banners'],
 ));

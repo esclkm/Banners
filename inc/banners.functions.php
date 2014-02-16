@@ -426,7 +426,7 @@ function banners_generate_tags($banner, $tagPrefix = '')
 			'IMPMADE' => $banner['ba_impmade'],
 			'CLICKS' => $banner['ba_clicks'],
 			'CATEGORY' => $banner['ba_cat'],
-			'CATEGORY_TITLE' => htmlspecialchars($structure['ba_banners'][$banner['ba_cat']]['title']),
+			'CATEGORY_TITLE' => htmlspecialchars($structure['banners'][$banner['ba_cat']]['title']),
 			'CLICKS_PERSENT' => ($banner['ba_impmade'] > 0) ?
 				round($banner['ba_clicks'] / $banner['ba_impmade'] * 100, 0)." %" : '0 %',
 			'WIDTH' => $banner['ba_width'],
@@ -470,8 +470,10 @@ function banners_generate_tags($banner, $tagPrefix = '')
  */
 function cot_banners_sync($cat)
 {
-	global $db_banners, $db;
-	return $db->query("SELECT COUNT(*) FROM $db_banners WHERE ba_cat ='".$db->query($cat)."'")->fetchColumn();
+	global $db, $db_structure, $db_banners;
+	$sql = $db->query("SELECT COUNT(*) FROM $db_banners
+		WHERE ba_cat='".$db->prep($cat)."'");
+	return (int) $sql->fetchColumn();
 }
 
 /**

@@ -163,7 +163,7 @@ if ($act == 'save')
 		cot_extrafield_movefiles();
 		cot_message($L['ba_saved']);
 		
-		cot_redirect(cot_url('admin', array('m' => 'other', 'p' => 'banners', 'a' => 'edit', 'id' => $id), '', true));
+		cot_redirect(cot_url('admin', array('m' => 'other', 'p' => 'banners'), '', true));
 	}
 	else
 	{
@@ -269,11 +269,7 @@ if (!empty($banner['ba_file']))
 }
 
 
-if (!empty($structure['banners']))
-{
-	$t->parse('MAIN.FORM');
-}
-
+cot_display_messages($t);
 $t->assign(array(
 	'PAGE_TITLE' => isset($banner['ba_id']) ? $L['ba_banner_edit'].": ".htmlspecialchars($banner['ba_title']) :
 		$L['ba_banner_new'],
