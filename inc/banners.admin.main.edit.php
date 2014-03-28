@@ -19,6 +19,10 @@ if (empty($structure['banners']))
 }
 
 $id = cot_import('id', 'G', 'INT');
+$maxrowsperpage = $cfg['maxrowsperpage'];
+list($pg, $d, $durl) = cot_import_pagenav('d', $maxrowsperpage); //page number for banners list
+$type = cot_import('type', 'G', 'TXT');
+$interval = cot_import('interval', 'G', 'TXT');
 
 $act = cot_import('act', 'P', 'ALP');
 if (!$id)
@@ -236,7 +240,7 @@ foreach ($cot_extrafields[$db_banners] as $exfld)
 		'FORM_EXTRAFLD' => $exfld_val,
 		'FORM_EXTRAFLD_TITLE' => $exfld_title
 		));
-	$t->parse('MAIN.FORM.EXTRAFLD');
+	$t->parse('MAIN.EXTRAFLD');
 }
 
 if (!empty($banner['ba_file']))
@@ -274,3 +278,71 @@ $t->assign(array(
 	'PAGE_TITLE' => isset($banner['ba_id']) ? $L['ba_banner_edit'].": ".htmlspecialchars($banner['ba_title']) :
 		$L['ba_banner_new'],
 ));
+
+if ($banner['ba_id'] > 0)
+{
+/*
+    SELECT DISTINCT FROM_UNIXTIME(epoch,"%M, %Y") AS month, count(*) as numberOfVisits
+    FROM mytable
+    GROUP BY month
+    ORDER BY epoch
+*/
+
+	$typesql = ($type=="clicks") ? 2 : 1;
+	$intervalsql = '%d.%m.%Y';
+	if ($interval == 'month') 
+	{
+		$intervalsql = '%m.%Y';
+	}
+	if ($interval == 'year') 
+	{
+		$intervalsql = '%Y';
+	}
+
+	$sql = "SELECT FROM_UNIXTIME(track_date,'$intervalsql') AS date, sum(track_count) as count
+	            FROM $db_banner_tracks
+
+	            WHERE ba_id='".(int)$banner['ba_id']."' and track_type = ".(int)$typesql."
+				GROUP BY date
+	            ORDER BY date ASC";
+
+
+	$sqllist = $db->query($sql, $params);
+
+
+	$types = array(
+		1 => $L['ba_impressions'],
+		2 => $L['ba_clicks']
+	);
+
+	$list = $sqllist->fetchAll();
+
+	if ($list)
+	{
+		$i++;
+		foreach ($list as $item)
+		{
+			$t->assign(array(
+				'LIST_ROW_NUM' => $i,
+				'LIST_ROW_TRACK_TYPE' => $typesql,
+				'LIST_ROW_TRACK_TYPE_TEXT' => $types[$typesql],
+				'LIST_ROW_TRACK_COUNT' => $item['count'],
+				'LIST_ROW_TRACK_DATE' => $item['date'],
+			));
+			$i++;
+			$t->parse('MAIN.STAT.LIST_ROW');
+		}
+	}
+
+	$t->assign(array(
+		'LIST_TOTALLINES' => $i,
+		'LIST_URL_IMPRESSIONS' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type=impressions&interval='.$interval),
+		'LIST_URL_CLICKS' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type=clicks&interval='.$interval),
+		'LIST_URL_DAY' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=day'),
+		'LIST_URL_MONTH' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=month'),
+		'LIST_URL_YEAR' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=year'),
+
+
+	));
+	$t->parse('MAIN.STAT');
+}

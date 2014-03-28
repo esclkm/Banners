@@ -279,7 +279,10 @@ function banner_impress($bannerid, $type = 'impress')
 			$track_type = 2;
 		}
 
-		$trackDate = cot_stamp2date(date('Y-m-d H', $sys['now']).':00:00');
+
+		preg_match('#(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})#', date('Y-m-d H', $sys['now']).':00:00', $m);
+		$trackDate = mktime((int) $m[4], (int) $m[5], (int) $m[6], (int) $m[2], (int) $m[3], (int) $m[1]);
+
 		$fields = '(track_count, track_type, ba_id, track_date)';
 		$vals = '';
 		foreach ($bannerid as $bid)
@@ -290,7 +293,7 @@ function banner_impress($bannerid, $type = 'impress')
 				{
 					$vals .= ', ';
 				}
-				$vals .= "(1, ".(int)$track_type.", ".(int)$bid.", $trackDate)";
+				$vals .= "(1, ".(int)$track_type.", ".(int)$bid.", ".$trackDate.")";
 			}
 		}
 		$db->query("INSERT INTO $db_banner_tracks $fields VALUES $vals ON DUPLICATE KEY UPDATE track_count=track_count+1");

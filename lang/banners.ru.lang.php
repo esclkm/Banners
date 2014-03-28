@@ -69,6 +69,12 @@ $L['ba_pt_monthly'] = "Ежемесячно";
 $L['ba_pt_weekly'] = "Еженедельно";
 $L['ba_pt_daily'] = "Ежедневно";
 
+
+$L['ba_day'] = "День";
+$L['ba_month'] = "Месяц";
+$L['ba_year'] = "Год";
+
+
 /**
  * Error, Message
  */
