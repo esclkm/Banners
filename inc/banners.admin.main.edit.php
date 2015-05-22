@@ -21,7 +21,6 @@ if (empty($structure['banners']))
 $id = cot_import('id', 'G', 'INT');
 $maxrowsperpage = $cfg['maxrowsperpage'];
 list($pg, $d, $durl) = cot_import_pagenav('d', $maxrowsperpage); //page number for banners list
-$type = cot_import('type', 'G', 'TXT');
 $interval = cot_import('interval', 'G', 'TXT');
 
 $act = cot_import('act', 'P', 'ALP');
@@ -288,59 +287,62 @@ if ($banner['ba_id'] > 0)
     ORDER BY epoch
 */
 
-	$typesql = ($type=="clicks") ? 2 : 1;
-	$intervalsql = '%d.%m.%Y';
+	$intervalsql = '%Y.%m.%d';
 	if ($interval == 'month') 
 	{
-		$intervalsql = '%m.%Y';
+		$intervalsql = '%Y.%m';
 	}
 	if ($interval == 'year') 
 	{
 		$intervalsql = '%Y';
-	}
 
+	}
+	//clicks
 	$sql = "SELECT FROM_UNIXTIME(track_date,'$intervalsql') AS date, sum(track_count) as count
 	            FROM $db_banner_tracks
+	            WHERE ba_id='".(int)$banner['ba_id']."' and track_type = 2
+				GROUP BY date ORDER BY date ASC";
+	$sqlclicks = $db->query($sql, $params)->fetchAll(PDO::FETCH_KEY_PAIR);
 
-	            WHERE ba_id='".(int)$banner['ba_id']."' and track_type = ".(int)$typesql."
-				GROUP BY date
-	            ORDER BY date ASC";
+	//views
+	$sql = "SELECT FROM_UNIXTIME(track_date,'$intervalsql') AS date, sum(track_count) as count
+	            FROM $db_banner_tracks
+	            WHERE ba_id='".(int)$banner['ba_id']."' and track_type = 1
+				GROUP BY date ORDER BY date ASC";
+	$sqlviews = $db->query($sql, $params)->fetchAll(PDO::FETCH_KEY_PAIR);
 
-
-	$sqllist = $db->query($sql, $params);
-
-
-	$types = array(
-		1 => $L['ba_impressions'],
-		2 => $L['ba_clicks']
-	);
-
-	$list = $sqllist->fetchAll();
-
-	if ($list)
+	$key_dates_clicks = array_keys ($sqlclicks);
+	$key_dates_views = array_keys ($sqlviews);
+	$key_dates = array_unique(array_merge($key_dates_views,$key_dates_clicks));
+	sort($key_dates);
+	if ($key_dates)
 	{
-		$i++;
-		foreach ($list as $item)
+		$i=0;
+		foreach ($key_dates as $date)
 		{
-			$t->assign(array(
-				'LIST_ROW_NUM' => $i,
-				'LIST_ROW_TRACK_TYPE' => $typesql,
-				'LIST_ROW_TRACK_TYPE_TEXT' => $types[$typesql],
-				'LIST_ROW_TRACK_COUNT' => $item['count'],
-				'LIST_ROW_TRACK_DATE' => $item['date'],
-			));
-			$i++;
-			$t->parse('MAIN.STAT.LIST_ROW');
+			$views = (int)$sqlviews[$date];
+			$clicks = (int)$sqlviews[$date] >(int)$sqlclicks[$date] ? (int)$sqlclicks[$date] : (int)$sqlviews[$date];
+			$date_show = implode('.', array_reverse(explode('.', $date)));
+
+			if ($views || $clicks )
+			{
+				$i++;
+				$t->assign(array(
+					'LIST_ROW_NUM' => $i,
+					'LIST_ROW_TRACK_VIEWS' => (int)$sqlviews[$date],
+					'LIST_ROW_TRACK_CLICKS' =>  (int)$sqlviews[$date] >(int)$sqlclicks[$date] ? (int)$sqlclicks[$date] : (int)$sqlviews[$date],
+					'LIST_ROW_TRACK_DATE' => $date_show,
+				));
+				$t->parse('MAIN.STAT.LIST_ROW');
+			}
 		}
 	}
 
 	$t->assign(array(
 		'LIST_TOTALLINES' => $i,
-		'LIST_URL_IMPRESSIONS' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type=impressions&interval='.$interval),
-		'LIST_URL_CLICKS' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type=clicks&interval='.$interval),
-		'LIST_URL_DAY' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=day'),
-		'LIST_URL_MONTH' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=month'),
-		'LIST_URL_YEAR' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&type='.$type.'&interval=year'),
+		'LIST_URL_DAY' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&interval=day'),
+		'LIST_URL_MONTH' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&interval=month'),
+		'LIST_URL_YEAR' => cot_url('admin', 'm=other&p=banners&a=edit&id='.$banner['ba_id'].'&interval=year'),
 
 
 	));

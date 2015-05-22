@@ -5,17 +5,17 @@
  *
  * @package Banners
  * @author Alex
- * @copyright Portal30 2013 http://portal30.ru
+ * @copyright littledev.ru
  */
 
 /* ====================
 [BEGIN_COT_EXT]
 Name=Banners
 Description=Banner rotation plugin with statistics
-Version=1.1.2
-Date=January 10, 2013
-Author= Alex
-Copyright=(c) Portal30 studio 2013
+Version=2.0.0
+Date=May 22, 2015
+Author= esclkm Alex
+Copyright=(c) littledev.ru
 Notes=
 Auth_guests=R
 Lock_guests=W12345A

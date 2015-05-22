@@ -6,9 +6,13 @@ global $db, $db_banner_tracks, $db_banners, $sys, $cfg;
 
 $id = cot_import('id', 'G', 'INT');
 $banner = $db->query("SELECT b.*, c.* FROM $db_banners AS b LEFT JOIN $db_banner_clients as c  ON b.bac_id=c.bac_id WHERE ba_id = ".(int)$id." LIMIT 1")->fetch();
-if (!$banner)
+if (empty($banner))
 {
-	cot_diefatal('banner not found');
+	cot_die_message(404, TRUE);
+}
+if(!$banner['ba_published'])
+{
+	cot_die_message(602, TRUE);
 }
 
 if ($cfg["plugin"]['banners']['track_clicks'] ||

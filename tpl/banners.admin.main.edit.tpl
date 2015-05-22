@@ -113,9 +113,6 @@
 </div>
 	<!-- BEGIN: STAT -->
 	<div class="quick-actions">
-
-		<a href="{LIST_URL_IMPRESSIONS}" class="quick-action icon eye">{PHP.L.ba_impressions}</a>
-		<a href="{LIST_URL_CLICKS}" class="quick-action icon target">{PHP.L.ba_clicks}</a>
 		<a href="{LIST_URL_DAY}" class="quick-action icon book">{PHP.L.ba_day}</a>
 		<a href="{LIST_URL_MONTH}" class="quick-action icon book">{PHP.L.ba_month}</a>
 		<a href="{LIST_URL_YEAR}" class="quick-action icon book">{PHP.L.ba_year}</a>
@@ -128,14 +125,14 @@
 		<table class="cells margintop10">
 			<tr>
 				<td class="coltop">{PHP.L.Date}</td>
-				<td class="coltop">{PHP.L.Type}</td>
-				<td class="coltop">{PHP.L.Count}</td>
+				<td class="coltop">{PHP.L.ba_impressions}</td>
+				<td class="coltop">{PHP.L.ba_clicks}</td>
 			</tr>
 			<!-- BEGIN: LIST_ROW -->
 			<tr>
 				<td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_TRACK_DATE}</td>
-				<td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_TRACK_TYPE_TEXT}</td>
-				<td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_TRACK_COUNT}</td>
+				<td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_TRACK_VIEWS}</td>
+				<td class="{LIST_ROW_ODDEVEN} centerall">{LIST_ROW_TRACK_CLICKS}</td>
 
 			</tr>
 			<!-- END: LIST_ROW -->
